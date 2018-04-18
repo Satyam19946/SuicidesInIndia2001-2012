@@ -30,6 +30,7 @@ for i,j in zip(suicides.State.unique(),range(number_of_states)):
 #Converting Counts from a dataframe to a list.
 counts = np.array(counts)
 counts_as_list = [0]* number_of_states
+
 for i in range(len(counts)):
 	counts_as_list[i] = counts[i][0]
 	
@@ -43,7 +44,6 @@ plt.subplots_adjust(bottom = 0.3)
 plt.ylabel("Number of Suicides")
 plt.title("Suicides in India")
 Fullscreen()
-#plt.savefig("suicides_numberofsuicidesvsstates.png")
 #plt.show()
 
 #No. of Suicides of each state for each age group. For ex. A & N Islands 0-14 x_suicides.
@@ -67,13 +67,11 @@ for i in range(len(suicides_by_age)-2):
 	ax.set_xticks(range(len(states_names_acronyms)))
 	ax.set_xticklabels(states_names_acronyms,rotation =90)
 	ax.set_ylim(0,210000)
-
 Fullscreen()
 plt.subplots_adjust(left = 0.07,bottom = 0.11 , right = 0.96 , top = 0.96, wspace = 0.14 , hspace = 0.37)	
-#plt.savefig("suicides_agegroupsvsstates.png")
-plt.show()
+#plt.show()
 
-
+#Extracting the different parameters of the dataset
 Causes = suicides.groupby('Gender').apply(lambda d: d.loc[d.means == 'Causes']).reasons.unique()
 Means = suicides.groupby('Gender').apply(lambda d: d.loc[d.means == 'Means_adopted']).reasons.unique()
 Education_Status = suicides.groupby('Gender').apply(lambda d: d.loc[d.means == 'Education_Status']).reasons.unique()
@@ -89,9 +87,29 @@ for i,j in zip(Causes,range(len(Causes))):
 ax = plt.subplot()
 plt.bar(range(len(counts_of_causes)),counts_of_causes)
 ax.set_xticks(range(len(Causes)))
-plt.subplots_adjust(left = 0.05,bottom = 0.49,right = 0.96, top = 0.95 ,wspace = 0.2,hspace = 0.2)
 ax.set_xticklabels(Causes,rotation = 90)
 plt.title("Why Do People Commit Suicide")
 Fullscreen()
-#plt.savefig("Countsofcausesvscauses")
+plt.subplots_adjust(left = 0.05,bottom = 0.49,right = 0.96, top = 0.95 ,wspace = 0.2,hspace = 0.2)
 #plt.show()
+
+
+#Why do people of each age group die. For ex. Why do People between 0-14 group die.
+grpbyagecause = [0]*len(Causes)
+for i,j in zip(Causes,range(len(grpbyagecause))):
+     grpbyagecause[j] = suicides.groupby('Age').apply(lambda d: d.loc[d.reasons == i]).groupby('Age').Count.sum()
+	 
+for i,j in zip(Causes,range(len(grpbyagecause))):
+	grpbyagecause[j] = suicides.groupby('Age').apply(lambda d: d.loc[d.reasons == i]).groupby('Age').Count.sum()
+grpbyagecause = np.array(grpbyagecause)
+#plotting the data extracted
+plt.close('all')
+for i in range(len(age_groups)):
+	ax = plt.subplot()
+	plt.bar(range(len(grpbyagecause[:,i])) , grpbyagecause[:,i])
+	plt.title("Reasons for People in age " + age_groups[i])
+	ax.set_xticks(range(len(Causes)))
+	ax.set_xticklabels(Causes,rotation =90)
+	Fullscreen()
+	plt.subplots_adjust(left = 0.05,bottom = 0.49,right = 0.96, top = 0.95 ,wspace = 0.2,hspace = 0.2)
+	plt.show()
